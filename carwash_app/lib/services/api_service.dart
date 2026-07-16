@@ -2,7 +2,7 @@ import 'package:dio/dio.dart';
 
 class ApiService {
   static final Dio _dio = Dio(BaseOptions(
-    baseUrl: 'http://192.168.1.3:3001/api', // Your new IP
+    baseUrl: 'http://192.168.1.7:3001/api', // Your new IP
     connectTimeout: 10000,
     receiveTimeout: 10000,
     headers: {'Content-Type': 'application/json'},

@@ -25,7 +25,8 @@ class CarWashApp extends StatelessWidget {
   }
 }
 
-// --- SPLASH SCREEN ---
+// --- PREMIUM BLUE SPLASH SCREEN ---
+// --- MINIMALIST PREMIUM SPLASH SCREEN ---
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -41,7 +42,8 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _goToForm() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(
+        const Duration(seconds: 2)); // Shorter time for a cleaner feel
     if (mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const BookingScreen()),
@@ -52,19 +54,42 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.white, // Pure white background
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.local_car_wash, size: 120, color: Colors.blue[700]),
-            const SizedBox(height: 24),
-            Text(AppConstants.appName,
-                style:
-                    const TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text('Book your wash in seconds',
-                style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+          children: const [
+            // Just the icon, no circle, no background
+            Icon(
+              Icons.local_car_wash,
+              size: 100,
+              color: Color(0xFF0D47A1), // Deep Blue
+            ),
+            SizedBox(height: 30),
+
+            // Clean, bold text
+            Text(
+              'CarWash Pro',
+              style: TextStyle(
+                fontSize: 34,
+                fontWeight: FontWeight.w800, // Extra bold
+                color: Color(
+                    0xFF263238), // Dark Charcoal grey (softer than pure black)
+                letterSpacing:
+                    -0.5, // Slightly tighter letters looks more modern
+              ),
+            ),
+            SizedBox(height: 10),
+
+            // Subtle grey subtext
+            Text(
+              'Premium Car Care',
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey, // Light grey
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),

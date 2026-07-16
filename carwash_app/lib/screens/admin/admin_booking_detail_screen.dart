@@ -191,8 +191,17 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
         controller: controller,
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: icon != null ? Icon(icon) : null,
-          border: const OutlineInputBorder(),
+          prefixIcon:
+              icon != null ? Icon(icon, color: const Color(0xFF0D47A1)) : null,
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300)),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300)),
+          focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(color: Color(0xFF0D47A1), width: 2)),
         ),
       ),
     );
@@ -207,16 +216,20 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(isWashed ? 'Washed Receipt' : 'Manage Request'),
+        title: Text(isWashed ? 'Washed Receipt' : 'Manage Request',
+            style: const TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF0D47A1), // Deep Blue
+        iconTheme: const IconThemeData(color: Colors.white),
+        elevation: 0,
         actions: [
           if (!isWashed)
             SizedBox(
-              width: 20, // Makes the tap area smaller
-              height: 20,
+              width: 36,
+              height: 36,
               child: IconButton(
-                padding: EdgeInsets.zero, // Removes extra padding
+                padding: EdgeInsets.zero,
                 icon: const Icon(Icons.phone_outlined,
-                    color: Colors.white, size: 20), // Thinner, smaller icon
+                    color: Colors.white, size: 20),
                 onPressed: () => _makePhoneCall(widget.booking.customerPhone),
               ),
             )
@@ -306,45 +319,96 @@ class _AdminBookingDetailScreenState extends State<AdminBookingDetailScreen> {
             const SizedBox(height: 40),
 
             // ACTION BUTTONS BASED ON STATUS
+            // ACTION BUTTONS BASED ON STATUS
             if (isPending)
               SizedBox(
                 width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed:
-                      _isUpdating ? null : () => _updateStatus('approved'),
-                  child: _isUpdating
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('APPROVE & ASSIGN',
-                          style: TextStyle(fontSize: 18)),
+                height: 55,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                        colors: [Color(0xFF0D47A1), Color(0xFF42A5F5)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.blue.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4))
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    onPressed:
+                        _isUpdating ? null : () => _updateStatus('approved'),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12))),
+                    child: _isUpdating
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('APPROVE & ASSIGN',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                  ),
                 ),
               )
             else if (isApproved)
               SizedBox(
                 width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple),
-                  onPressed:
-                      _isUpdating ? null : () => _updateStatus('completed'),
-                  child: _isUpdating
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('MARK AS WASHED',
-                          style: TextStyle(fontSize: 18)),
+                height: 55,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                        colors: [Color(0xFF263238), Color(0xFF546E7A)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight), // Dark Grey for Washed
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4))
+                    ],
+                  ),
+                  child: ElevatedButton(
+                    onPressed:
+                        _isUpdating ? null : () => _updateStatus('completed'),
+                    style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12))),
+                    child: _isUpdating
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text('🧼 MARK AS WASHED',
+                            style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold)),
+                  ),
                 ),
               )
             else if (isWashed)
               SizedBox(
                 width: double.infinity,
-                height: 50,
+                height: 55,
                 child: OutlinedButton.icon(
                   onPressed: _printReceipt,
-                  icon: const Icon(Icons.print),
+                  icon: const Icon(Icons.print, color: Color(0xFF0D47A1)),
                   label: const Text('PRINT / SAVE RECEIPT',
-                      style: TextStyle(fontSize: 18)),
+                      style: TextStyle(
+                          fontSize: 18,
+                          color: Color(0xFF0D47A1),
+                          fontWeight: FontWeight.w600)),
                   style: OutlinedButton.styleFrom(
-                      side: const BorderSide(width: 2)),
+                    side: const BorderSide(color: Color(0xFF0D47A1), width: 2),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
                 ),
               )
           ],

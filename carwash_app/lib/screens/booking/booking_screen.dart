@@ -190,194 +190,299 @@ class _BookingScreenState extends State<BookingScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Request Appointment'),
+        title: const Text('Book Appointment',
+            style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white)),
+        backgroundColor: const Color(0xFF0D47A1), // Deep Blue App Bar
+        elevation: 0,
+        iconTheme:
+            const IconThemeData(color: Colors.white), // Makes icons white
         actions: [
-          // SECRET ADMIN BUTTON
           IconButton(
-            icon: const Icon(Icons.admin_panel_settings),
+            icon: const Icon(Icons.admin_panel_settings, color: Colors.white),
             onPressed: () => _showAdminLogin(),
           )
         ],
       ),
+      backgroundColor: const Color(0xFFE3F2FD), // Light blue background
       body: SingleChildScrollView(
-        // <--- ADDED THIS
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            autovalidateMode: AutovalidateMode.onUserInteraction,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(widget.carWash?.name ?? 'Request Car Wash',
-                    style: const TextStyle(
-                        fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 24),
-
-                // Name Field
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                      labelText: 'Your Name',
-                      prefixIcon: Icon(Icons.person),
-                      border: OutlineInputBorder()),
+        child: Column(
+          children: [
+            // Medium Blue Header
+            Container(
+              height: 120,
+              width: double.infinity,
+              decoration: const BoxDecoration(
+                color: Color(0xFF1976D2),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(40),
+                  bottomRight: Radius.circular(40),
                 ),
-                const SizedBox(height: 16),
+              ),
+              child: const Center(
+                child: Icon(Icons.directions_car_filled,
+                    size: 80, color: Colors.white24),
+              ),
+            ),
 
-                // Phone Field
-                // Phone Field with Ethiopian Validation
-                TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    labelText: 'Phone Number',
-                    prefixIcon: Icon(Icons.phone),
-                    border: OutlineInputBorder(),
-                    hintText:
-                        '09XX XXX XXXX', // Shows the user the expected format
+            // THE FLOATING WHITE CARD
+            Transform.translate(
+              offset: const Offset(0, -30),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                child: Card(
+                  elevation: 8,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Phone number is required';
-                    }
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Form(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Center(
+                            child: Text("Enter Your Details",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF0D47A1))),
+                          ),
+                          const SizedBox(height: 24),
 
-                    // Ethiopian Phone Number Regex Check
-                    // Checks for 09... or 07... (10 digits total)
-                    // OR checks for +2519... or +2517... (12 digits total)
-                    final ethiopianRegex =
-                        RegExp(r'^(09|07)\d{8}$|^\+251(9|7)\d{8}$');
+                          _buildModernField(Icons.person, 'Full Name',
+                              _nameController, false),
+                          const SizedBox(height: 16),
 
-                    if (!ethiopianRegex.hasMatch(value.trim())) {
-                      return 'Enter a valid Ethiopian number (e.g., 0912345678)';
-                    }
+                          _buildModernField(Icons.phone, 'Phone Number',
+                              _phoneController, false,
+                              isPhone: true),
+                          const SizedBox(height: 16),
 
-                    return null; // Returns null if it is valid
-                  },
-                ),
-                const SizedBox(height: 16),
-                const SizedBox(height: 16),
+                          // Vehicle Type Dropdown
+                          Container(
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey.shade300),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedVehicleType,
+                              decoration: const InputDecoration(
+                                labelText: 'Vehicle Type',
+                                prefixIcon: Icon(Icons.directions_car,
+                                    color: Color(0xFF0D47A1)),
+                                border: InputBorder.none,
+                              ),
+                              items: _vehicleTypes.map((type) {
+                                return DropdownMenuItem(
+                                    value: type, child: Text(type));
+                              }).toList(),
+                              onChanged: (value) {
+                                if (value != null)
+                                  setState(() => _selectedVehicleType = value);
+                              },
+                            ),
+                          ),
+                          const SizedBox(height: 16),
 
-                // Vehicle Type Dropdown
-                DropdownButtonFormField<String>(
-                  value: _selectedVehicleType,
-                  decoration: const InputDecoration(
-                    labelText: 'Vehicle Type',
-                    prefixIcon: Icon(Icons.directions_car),
-                    border: OutlineInputBorder(),
-                  ),
-                  items: _vehicleTypes.map((type) {
-                    return DropdownMenuItem(
-                      value: type,
-                      child: Text(type),
-                    );
-                  }).toList(),
-                  onChanged: (value) {
-                    if (value != null)
-                      setState(() => _selectedVehicleType = value);
-                  },
-                ),
-                // Auto Location Indicator
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8)),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.my_location, color: Colors.blue),
-                      const SizedBox(width: 10),
-                      Text(_currentLocation,
-                          style: const TextStyle(fontWeight: FontWeight.w500)),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
+                          // Auto Location Indicator (Blue tint)
+                          Container(
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.shade50,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.check_circle,
+                                    color: Color(0xFF0D47A1)),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                    child: Text(_currentLocation,
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.w500))),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
 
-                // Date Picker
-                const Text('Select Date',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 8),
-                InkWell(
-                  onTap: () => _selectDate(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 16),
-                    decoration: BoxDecoration(
-                        border: Border.all(color: Colors.grey),
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.calendar_today, color: Colors.grey),
-                        const SizedBox(width: 12),
-                        Text(_selectedDate == null
-                            ? 'Pick a date'
-                            : DateFormat('yyyy-MM-dd').format(_selectedDate!)),
-                      ],
+                          // Date Picker
+                          const Text('Select Date',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 8),
+                          InkWell(
+                            onTap: () => _selectDate(context),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 16),
+                              decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.grey.shade300),
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.calendar_today,
+                                      color: Colors.grey),
+                                  const SizedBox(width: 12),
+                                  Text(_selectedDate == null
+                                      ? 'Pick a date'
+                                      : DateFormat('yyyy-MM-dd')
+                                          .format(_selectedDate!)),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+
+                          // Time Picker
+                          const Text('Select Time',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          const SizedBox(height: 8),
+                          Wrap(
+                            spacing: 8.0,
+                            children: _timeSlots.map((time) {
+                              return ChoiceChip(
+                                label: Text(time),
+                                selected: _selectedTime == time,
+                                onSelected: (selected) {
+                                  if (selected)
+                                    setState(() => _selectedTime = time);
+                                },
+                                selectedColor: Colors.blue.shade100,
+                              );
+                            }).toList(),
+                          ),
+                          const SizedBox(height: 30),
+
+                          // PREMIUM BLUE GRADIENT BUTTON
+                          SizedBox(
+                            width: double.infinity,
+                            height: 55,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF0D47A1),
+                                    Color(0xFF42A5F5)
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.blue.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 4),
+                                  )
+                                ],
+                              ),
+                              child: ElevatedButton(
+                                onPressed:
+                                    _isSubmitting ? null : _submitBooking,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  elevation: 0,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12)),
+                                ),
+                                child: _isSubmitting
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white)
+                                    : const Text('SEND REQUEST',
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            letterSpacing: 0.5)),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Search Nearby Button
+                          OutlinedButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const HomeScreen(canBook: false)));
+                            },
+                            icon: const Icon(Icons.map_outlined,
+                                color: Color(0xFF0D47A1)),
+                            label: const Text('Search Nearby Car Washes',
+                                style: TextStyle(
+                                    color: Color(0xFF0D47A1),
+                                    fontWeight: FontWeight.w600)),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              side: const BorderSide(color: Color(0xFF0D47A1)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
+                            ),
+                          )
+                        ],
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
-
-                // Time Picker
-                const Text('Select Time',
-                    style:
-                        TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8.0,
-                  children: _timeSlots.map((time) {
-                    return ChoiceChip(
-                        label: Text(time),
-                        selected: _selectedTime == time,
-                        onSelected: (selected) {
-                          if (selected) setState(() => _selectedTime = time);
-                        });
-                  }).toList(),
-                ),
-
-                const SizedBox(height: 40), // <--- REPLACE SPACER WITH THIS
-
-                // Submit Button
-                // Submit Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    onPressed: _isSubmitting ? null : _submitBooking,
-                    child: _isSubmitting
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('SEND REQUEST',
-                            style: TextStyle(fontSize: 18)),
-                  ),
-                ),
-                const SizedBox(height: 16), // <--- ADD SPACING
-
-                // NEW: Search Nearby Button
-                OutlinedButton.icon(
-                  onPressed: () {
-                    // Open the map to just look around
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const HomeScreen(canBook: false)),
-                    );
-                  },
-                  icon: const Icon(Icons.map_outlined),
-                  label: const Text('Search Nearby Car Washes'),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    side: const BorderSide(color: Colors.blue),
-                  ),
-                )
-              ],
+              ),
             ),
-          ),
+            const SizedBox(height: 40),
+          ],
         ),
       ),
+    );
+  }
+
+  // Helper method with Blue focus colors
+  Widget _buildModernField(IconData icon, String label,
+      TextEditingController controller, bool obscure,
+      {bool isPhone = false}) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscure,
+      keyboardType: isPhone ? TextInputType.phone : TextInputType.text,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon, color: const Color(0xFF0D47A1)), // Blue icons
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+              color: Color(0xFF0D47A1), width: 2), // Blue focus ring
+        ),
+      ),
+      validator: isPhone
+          ? (value) {
+              if (value == null || value.isEmpty)
+                return 'Phone number is required';
+              final ethiopianRegex =
+                  RegExp(r'^(09|07)\d{8}$|^\+251(9|7)\d{8}$');
+              if (!ethiopianRegex.hasMatch(value.trim()))
+                return 'Enter a valid Ethiopian number';
+              return null;
+            }
+          : (value) {
+              if (value == null || value.isEmpty)
+                return 'This field is required';
+              return null;
+            },
     );
   }
 }
